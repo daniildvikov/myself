@@ -29,7 +29,7 @@ typedef struct{
     uint32_t importantColorCount;
 } BitmapInfoHeader;
 
-typedef struct {
+typedef struct{
     uint8_t b;
     uint8_t g;
     uint8_t r;
@@ -43,9 +43,7 @@ typedef struct{
 
 #pragma pack(pop)
 
-
-typedef struct
-{
+typedef struct{
     uint32_t x;
     uint32_t y;
     uint32_t I;
@@ -54,19 +52,22 @@ typedef struct
 } SQR;
 
 void HELP(){
-    wprintf(L"\n\nДля запуска программы использовать следующий порядок аргументов:\n 'Program   Function    Readfile    Outfile  //   Flags\n\n");
-    wprintf(L"-------------Доступные функции------------- \n");
-    wprintf(L"triangle: рисование трегольника\n");
-    wprintf(L"флаги:\n-A/--Apoint; -B/--Bpoint; -D/Cpoint: аргумент вида число;число -координаты вершин\n");
-    wprintf(L"-с/--1color; -C/--2color : цвет 1 и 2; аргумент вида число.число.число\n");
-    wprintf(L"-V/--lWidth: толщина линии; аргумент вида число\n");
-    wprintf(L"-f/--Fill заливка\n\n" );
-    wprintf(L"rectfind: поиск прямоуголька заданного цвета; смена цвета\n ");
-    wprintf(L"флаги:\n ");
-    wprintf(L"-с/--1color; -C/--2color : цвет 1 и 2; аргумент вида число.число.число\n\n");
-    wprintf(L"collage: коллаж nxm\n ");
-    wprintf(L"флаги:\n ");
-    wprintf(L"-X/--xPic -Y/--yPic число\n ");
+    printf(
+    "\n\nДля запуска программы использовать следующий порядок аргументов:\n 'prog_name func_name input_file out_file -flag1 -flag2 -flag…\n\n"
+    "Функции:\n\n"
+    "help - вывоз функции помощи\n\n"
+    "info - вывод на экран информации о файле\n\n"
+    "triangle: рисование трегольника\n"
+    "флаги:\n-A/--Axpoint; -a/--Aypoint; -B/--Bxpoint; -b/--Bypoint; -D/--Cxpoint; -d/--Cypoint аргумент вида: число - координаты вершин\n"
+    "-с/--1color; -C/--2color : цвет 1 и 2; аргумент вида число.число.число\n"
+    "-V/--lWidth: толщина линии; аргумент вида число\n"
+    "-f/--Fill заливка\n\n" 
+    "rectfind: поиск прямоуголька заданного цвета; смена цвета\n"
+    "флаги:\n"
+    "-с/--1color; -C/--2color : цвет 1 и 2; аргумент вида число.число.число\n\n"
+    "collage: коллаж nxm\n"
+    "флаги:\n"
+    "-X/ -Y/ число\n ");
 }
 
 void displayinfo(BitmapInfoHeader header){
@@ -82,7 +83,6 @@ void displayinfo(BitmapInfoHeader header){
     printf("colorsInColorTable:\t%x (%u)\n", header.colorsInColorTable, header.colorsInColorTable);
     printf("importantColorCount:\t%x (%u)\n", header.importantColorCount, header.importantColorCount);
 }
-
 
 int BMPREAD(char* filename, BMP* picture){
     FILE* file=fopen(filename, "rb");
@@ -117,39 +117,27 @@ void setPixel(uint16_t x, uint16_t y, Rgb*** mas, Rgb* color){
     (*mas)[x][y].r=color->r;
 }
 
-
-
 void findAndColorRectangle(BMP* bmp, Rgb targetColor, Rgb newColor) {
     int width = bmp->infoHead.width;
     int height = bmp->infoHead.height;
-
     int maxRectX = 0;
     int maxRectY = 0;
     int maxRectWidth = 0;
     int maxRectHeight = 0;
-
-    // Находим самый большой прямоугольник заданного цвета
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             Rgb pixelColor = bmp->pixels[y][x];
-
             if (pixelColor.r == targetColor.r && pixelColor.g == targetColor.g && pixelColor.b == targetColor.b) {
-                // Ищем границы текущего прямоугольника
                 int rectX = x;
                 int rectY = y;
                 int rectWidth = 1;
                 int rectHeight = 1;
-
-                // Ищем правую границу прямоугольника
                 while (x + rectWidth < width) {
                     Rgb nextPixelColor = bmp->pixels[y][x + rectWidth];
                     if (nextPixelColor.r != targetColor.r || nextPixelColor.g != targetColor.g || nextPixelColor.b != targetColor.b)
                         break;
-
                     rectWidth++;
                 }
-
-                // Ищем нижнюю границу прямоугольника
                 while (y + rectHeight < height) {
                     int lineOffset = (y + rectHeight) * width;
                     for (int i = 0; i < rectWidth; i++) {
@@ -178,7 +166,6 @@ void findAndColorRectangle(BMP* bmp, Rgb targetColor, Rgb newColor) {
         }
     }
 }
-
 
 void lineW(uint16_t x, uint16_t y, Rgb*** mas, uint8_t width, unsigned int H, unsigned int W, Rgb* color) {
     uint16_t i = 0;
@@ -235,8 +222,6 @@ void Palit(uint16_t x1, uint16_t y1,uint16_t x2,uint16_t y2, uint16_t x3,uint16_
 
 }
 
-
-
 void drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, Rgb*** mas, uint8_t width, unsigned int H, unsigned int W, Rgb* color) {
     const int16_t deltaX = abs(x2 - x1);
     const int16_t deltaY = abs(y2 - y1);
@@ -244,10 +229,10 @@ void drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, Rgb*** mas, ui
     const int16_t signY = y1 < y2 ? 1 : -1;
     int16_t error = deltaX - deltaY;
     setPixel(x2, y2, mas, color);
-    lineW(x2, y2, mas, width, H, W, color); // Pass additional arguments to lineW
+    lineW(x2, y2, mas, width, H, W, color);
     while (x1 != x2 || y1 != y2) {
         setPixel(x1, y1, mas, color);
-        lineW(x1, y1, mas, width, H, W, color); // Pass additional arguments to lineW
+        lineW(x1, y1, mas, width, H, W, color); 
         int16_t error2 = error * 2;
         if (error2 > -deltaY) {
             error -= deltaY;
@@ -273,6 +258,7 @@ for (int y = 0; y < height; y++) {
     fwrite(paddingBytes, sizeof(uint8_t), padding, file); // Записываем выравнивающие байты
     }
 }
+
 Rgb creatergb(uint8_t blue, uint8_t green, uint8_t red){
     Rgb bgr = {blue, green, red};
     return bgr;
@@ -286,58 +272,52 @@ void trgb(char* str, Rgb* color) {
     color->b = (uint8_t)b;
 }
 
-void collage(BMP* picture, uint8_t n, uint8_t m){
-
-    BMP widepic;
-
-    uint32_t W=picture->infoHead.width;
-    uint32_t H=picture->infoHead.height;
-
-    widepic.infoHead=picture->infoHead;
-    widepic.fileHead=picture->fileHead;
-
-    widepic.infoHead.height=n*H;
-    widepic.infoHead.width=m*W;
-
-    if(widepic.infoHead.height>32767 || widepic.infoHead.width> 32767){
-        wprintf(L"Большой размер изображения");
-        return;
+void collage(BMP* picture, uint8_t n, uint8_t m) {
+    // Создание коллажа размера N*M
+    uint32_t width = picture->infoHead.width;
+    uint32_t height = picture->infoHead.height;
+    uint32_t collageWidth = width * n;
+    uint32_t collageHeight = height * m;
+    // Выделение памяти для коллажа
+    Rgb** collagePixels = malloc(sizeof(Rgb*) * collageHeight);
+    for (int i = 0; i < collageHeight; i++) {
+        collagePixels[i] = malloc(sizeof(Rgb) * collageWidth);
     }
-
-    widepic.pixels=malloc(n*H*sizeof(Rgb*));
-
-    for(int i=0; i<H*n; i++){
-        widepic.pixels[i]=malloc(m*W*sizeof(Rgb)+(4-(W*sizeof(Rgb))%4)%4);
-    }
-
-    for(int i=0; i<m*W; i++){
-        for(int j=0; j<n*H;j++){
-            widepic.pixels[j][i]=picture->pixels[j%H][i%W];
+    for (int i = 0; i < collageHeight; i++) {
+        int row = i % height;
+        for (int j = 0; j < collageWidth; j++) {
+            int column = j % width;
+            collagePixels[i][j] = picture->pixels[row][column];
         }
     }
 
+    // Освобождение памяти старых пикселей
+    for (int i = 0; i < height; i++) {
+        free(picture->pixels[i]);
+    }
+    free(picture->pixels);
 
-    picture->infoHead=widepic.infoHead;
-    picture->fileHead=widepic.fileHead;
-    picture->pixels=widepic.pixels;
-
+    picture->infoHead.width = collageWidth;   // Обновление информации о коллаже
+    picture->infoHead.height = collageHeight;
+    picture->fileHead.filesize = sizeof(BMP) + sizeof(Rgb) * collageWidth * collageHeight;
+    picture->fileHead.pixelArrOffset = sizeof(BMP);
+    picture->pixels = collagePixels;     // Присваивание новых пикселей коллажу
 }
 
-
 int main(int argc, char* argv[]) {
-
     setlocale(LC_ALL, "");
-
     const struct option lineWidth = {"lWidth", required_argument, NULL, 'V'};
     const struct option firstColor = {"1color", required_argument, NULL, 'c'};
     const struct option secondColor = {"2color", required_argument, NULL, 'C'};
     const struct option xPic = {"xPic", required_argument, NULL, 'X'};
     const struct option yPic = {"yPic", required_argument, NULL, 'Y'};
-    const struct option APoint = {"Apoint", required_argument, NULL, 'A'};
-    const struct option BPoint = {"Bpoint", required_argument, NULL, 'B'};
-    const struct option CPoint = {"Cpoint", required_argument, NULL, 'D'};
+    const struct option AxPoint = {"Axpoint", required_argument, NULL, 'A'};
+    const struct option AyPoint = {"Aypoint", required_argument, NULL, 'a'};
+    const struct option BxPoint = {"Bxpoint", required_argument, NULL, 'B'};
+    const struct option ByPoint = {"Bypoint", required_argument, NULL, 'b'};
+    const struct option CxPoint = {"Cxpoint", required_argument, NULL, 'D'};
+    const struct option CyPoint = {"Cxpoint", required_argument, NULL, 'd'};
     const struct option Fill = {"Fill", no_argument, NULL, 'f'};
-
     BMP picture;
     int key;
     Rgb color1 = {0, 0, 0};
@@ -351,7 +331,6 @@ int main(int argc, char* argv[]) {
     uint16_t Cx=0;
     uint16_t Cy=0;
     char* end;
-
     FILE* infile = fopen(argv[2], "rb");
     FILE* outfile = fopen(argv[3], "wb");
     int w=0;
@@ -372,79 +351,71 @@ int main(int argc, char* argv[]) {
     else if (!strcmp(argv[1], "info")) {
         displayinfo(picture.infoHead);
     }
-    else if (!strcmp(argv[1], "triangle")) {
-        struct option opts[] = {firstColor, secondColor, APoint, BPoint, CPoint, Fill, lineWidth};
-        key = getopt_long(argc, argv, "c:C:A:B:D:fV:", opts, &i);
-        while (key != -1) {
-            switch (key) {
-                case 'c':
-                    trgb(optarg, &color1);
-                    break;
-                case 'C':
-                    trgb(optarg, &color2);
-                    break;
-                case 'A':
-                    Ay=atoi(strtok(optarg,";"));
-                    Ax=atoi(strtok(NULL,";"));
-                    if((Ay >= picture.infoHead.width) || (Ax >= picture.infoHead.height)){
-                        wprintf(L"слишком большие координаты точки А");
-                        return 1;
-                    }
-
-                    break;
-                case 'B':
-                    By=atoi(strtok(optarg,";"));
-                    Bx=atoi(strtok(NULL,";"));
-                    if((By >= picture.infoHead.width) || (Bx >= picture.infoHead.height)){
-                        wprintf(L"слишком большие координаты точки B");
-                        return 1;
-                    }
-
-                    break;
-                case 'D':
-                    Cy=atoi(strtok(optarg,";"));
-                    Cx=atoi(strtok(NULL,";"));
-                    if((Cy >= picture.infoHead.width) || (Cx >= picture.infoHead.height)){
-                        wprintf(L"слишком большие координаты точки C");
-                        return 1;
-                    }
-
-                    break;
-                case 'f':
-                    zalivka = 1;
-                    break;
-                case 'V':
-                    w=atoi(optarg);
-                    break;
-                case '?':
-                    wprintf(L" нечитаемый ключ ");
-                    break;
+    else
+        if (!strcmp(argv[1], "triangle")) {
+            struct option opts[] = {firstColor, secondColor, AxPoint, AyPoint, BxPoint, CxPoint, CyPoint, Fill, lineWidth};
+            key = getopt_long(argc, argv, "c:C:A:a:B:b:D:d:fV:", opts, &i);
+            while (key != -1) {
+                switch (key) {
+                    case 'c':
+                        trgb(optarg, &color1);
+                        break;
+                    case 'C':
+                        trgb(optarg, &color2);
+                        break;
+                    case 'A':
+                        Ax = atoi(optarg);
+                        break;
+                    case 'a':
+                        Ay = atoi(optarg);
+                        break;
+                    case 'B':
+                        Bx = atoi(optarg);
+                        break;
+                    case 'b':
+                        By = atoi(optarg);
+                        break;
+                    case 'D':
+                        Cx = atoi(optarg);
+                        break;
+                    case 'd':
+                        Cy = atoi(optarg);
+                        break;
+                    case 'f':
+                        zalivka = 1;
+                        break;
+                    case 'V':
+                        w=atoi(optarg);
+                        break;
+                    case '?':
+                        wprintf(L" нечитаемый ключ ");
+                        break;
+                }
+                key = getopt_long(argc, argv, "c:C:A:a:B:b:D:d:fV:", opts, &i);
             }
-            key = getopt_long(argc, argv, "c:C:A:B:D:fV:", opts, &i);
+            if (zalivka == 1) {
+                Palit(Ax, Ay, Bx, By, Cx, Cy, &(picture.pixels), picture.infoHead.height, picture.infoHead.width,
+                    &color2);
+                drawLine(Ax, Ay, Cx, Cy, &(picture.pixels), w, picture.infoHead.height, picture.infoHead.width,
+                        &color1);
+                drawLine(Bx, By, Cx, Cy, &(picture.pixels), w, picture.infoHead.height, picture.infoHead.width,
+                        &color1);
+                drawLine(Ax, Ay, Bx, By, &(picture.pixels), w, picture.infoHead.height, picture.infoHead.width,
+                        &color1);
+                BMPWRITE(outfile, &picture);
+                return 0;
+            }
+            else{
+                drawLine(Ax, Ay, Cx, Cy, &(picture.pixels), w, picture.infoHead.height, picture.infoHead.width,
+                        &color1);
+                drawLine(Bx, By, Cx, Cy, &(picture.pixels), w, picture.infoHead.height, picture.infoHead.width,
+                        &color1);
+                drawLine(Ax, Ay, Bx, By, &(picture.pixels), w, picture.infoHead.height, picture.infoHead.width,
+                        &color1);
+                BMPWRITE(outfile, &picture);
+                return 0;
+            }
         }
-        if (zalivka == 1) {
-            Palit(Ax, Ay, Bx, By, Cx, Cy, &(picture.pixels), picture.infoHead.height, picture.infoHead.width,
-                  &color2);
-            drawLine(Ax, Ay, Cx, Cy, &(picture.pixels), w, picture.infoHead.height, picture.infoHead.width,
-                     &color1);
-            drawLine(Bx, By, Cx, Cy, &(picture.pixels), w, picture.infoHead.height, picture.infoHead.width,
-                     &color1);
-            drawLine(Ax, Ay, Bx, By, &(picture.pixels), w, picture.infoHead.height, picture.infoHead.width,
-                     &color1);
-            BMPWRITE(outfile, &picture);
-            return 0;
-        }
-        else{
-            drawLine(Ax, Ay, Cx, Cy, &(picture.pixels), w, picture.infoHead.height, picture.infoHead.width,
-                     &color1);
-            drawLine(Bx, By, Cx, Cy, &(picture.pixels), w, picture.infoHead.height, picture.infoHead.width,
-                     &color1);
-            drawLine(Ax, Ay, Bx, By, &(picture.pixels), w, picture.infoHead.height, picture.infoHead.width,
-                     &color1);
-            BMPWRITE(outfile, &picture);
-            return 0;
-        }
-    }
     else if (!strcmp(argv[1], "rectfind")) {
         struct option opts[] = {{"color", required_argument, NULL, 'c'},
                                 {"new-color", required_argument, NULL, 'C'},
